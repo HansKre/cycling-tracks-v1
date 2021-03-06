@@ -1,0 +1,22 @@
+{
+  "name": "leaflet-garmin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "leaflet-demo.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "/public/activity-details/*.json"
+    ]
+  },
+  "author": "Hans Krebs",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "tunneled-got": "^1.3.2"
+  }
+}
