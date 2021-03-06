@@ -28,6 +28,9 @@ fetch('/files')
                     .then(response => response.json())
                     .then(data => {
                         // map out the [lat,long]
+                        if (data.geoPolylineDTO === null) {
+                            return;
+                        }
                         const latslongs = data.geoPolylineDTO.polyline.map((entry) => [entry.lat, entry.lon]);
 
                         // add latslongs to map
@@ -40,6 +43,19 @@ fetch('/files')
                                 .setLatLng(e.latlng)
                                 .setContent(`Tour ... ${e.latlng.toString()}`)
                                 .openOn(map);
+                        });
+
+                        // add on-hover
+                        polyline.on('mouseover', e => {
+                            polyline.setStyle({ weight: 5 });
+                            const popup = L.popup();
+                            popup
+                                .setLatLng(e.latlng)
+                                .setContent(`Tour ... ${e.latlng.toString()}`)
+                                .openOn(map);
+                        });
+                        polyline.on('mouseout', e => {
+                            polyline.setStyle({ weight: 3 });
                         });
 
                         // zoom the map to the polyline

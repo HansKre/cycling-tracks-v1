@@ -57,7 +57,6 @@ app.get('/download', async (req, res) => {
         // "method": "GET",
         "mode": "cors"
     });
-    // console.log(activities);
     activitiesMapped = JSON.parse(activities).map(activity => {
         return {
             activityId: activity.activityId,
@@ -78,7 +77,6 @@ app.get('/download', async (req, res) => {
 
 app.get('/files', (req, res) => {
     const files = fs.readdirSync('./public/activity-details');
-    console.log(files);
     res.json(files);
 });
 
