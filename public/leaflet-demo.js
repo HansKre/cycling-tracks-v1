@@ -1,6 +1,4 @@
-// import { queries } from './queries.js';
-// export const drawTable = (config, targetDiv, query) => 
-
+import './leaflet-heat.js';
 // import 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js';
 
 const map = L.map('mapid'); //.setView([51.505, -0.09], 13);
@@ -27,40 +25,60 @@ fetch('/files')
                 fetch(`activity-details/${fileName}`)
                     .then(response => response.json())
                     .then(data => {
-                        // map out the [lat,long]
-                        if (data.geoPolylineDTO === null) {
-                            return;
+                        let latslongs;
+                        if (data && data.bike && data.bike === 'ebike') {
+                            latslongs = data.details.map(p => [p.lat, p.lng]);
+                        } else {
+                            if (!data.details || !data.details.geoPolylineDTO)
+                                return;
+                            // flatten differences
+                            latslongs = data.details.geoPolylineDTO.polyline.map((entry) => [parseInt(entry.lat * 10000) / 10000, parseInt(entry.lon * 10000) / 10000]);
                         }
-                        const latslongs = data.geoPolylineDTO.polyline.map((entry) => [entry.lat, entry.lon]);
 
                         // add latslongs to map
                         var polyline = L.polyline(latslongs, { color: randomColor() }).addTo(map);
 
-                        // add on-click popup
-                        polyline.on('click', e => {
-                            const popup = L.popup();
-                            popup
-                                .setLatLng(e.latlng)
-                                .setContent(`Tour ... ${e.latlng.toString()}`)
-                                .openOn(map);
-                        });
-
                         // add on-hover
                         polyline.on('mouseover', e => {
-                            polyline.setStyle({ weight: 5 });
+                            polyline.setStyle({ weight: 7 });
                             const popup = L.popup();
                             popup
                                 .setLatLng(e.latlng)
-                                .setContent(`Tour ... ${e.latlng.toString()}`)
+                                .setContent(`${data.activity.activityId},
+                                ${data.activity.begin}
+                                ${(data.activity.distance / 1000).toFixed(1)}km
+                                ${parseInt(data.activity.elevationGain)}m
+                                ${data.activity.calories}kcal
+                                ${data.activity.duration}
+                                ${data.bike}`
+                                )
                                 .openOn(map);
                         });
                         polyline.on('mouseout', e => {
                             polyline.setStyle({ weight: 3 });
+                            map.closePopup();
                         });
-
-                        // zoom the map to the polyline
-                        map.fitBounds(polyline.getBounds());
                     });
             }
         );
+    });
+
+fetch(`activity-details/heatmap.json`)
+    .then(response => response.json())
+    .then(data => {
+        const incIntensity = (intensity) => {
+            const newIntensity = intensity * 5;
+            return newIntensity <= 1.0 ? newIntensity : 1.0;
+        }
+
+        const mapped = data.map(d => [d.lat, d.lng, incIntensity(d.intensity)]);
+        const heat = L.heatLayer(mapped, {
+            radius: 10,
+            blur: 5,
+            gradient: { 1: 'red' }
+            // gradient: { 0.1: 'white', 0.2: 'blue', 0.3: 'lime', 0.5: 'yellow', 1: 'red' }
+        }).addTo(map);
+        // zoom the map to the polyline
+        var polyline = L.polyline(mapped);
+        map.fitBounds(polyline.getBounds());
     });
