@@ -51,13 +51,24 @@ app.get('/download/bosch', async (req, res) => {
         activity.elevationGain = details.elevation_gain;
 
         const coordinates = [];
-        console.log(activity.activityId);
         if (details && details.coordinates) {
+            // on longer stops, tours get split into segments
             details.coordinates.forEach(tourSegment => coordinates.push(...tourSegment));
 
-            const mappedDetails = coordinates.filter(val => val[0] !== null && val[1] !== null).map(p => { return { lat: p[0], lng: p[1], count: 0 } })
+            const points = coordinates.filter(val => val[0] !== null && val[1] !== null).map(p => { return { x: p[0], y: p[1] } });
 
-            fs.writeFileSync(`./public/activity-details/details-${activity.activityId}.json`, JSON.stringify({ details: mappedDetails, activity: activity, bike: 'ebike' }));
+            const simplify = require('simplify-js');
+
+            const tolerance = 0.00001 * 2; //-70%
+            const highQuality = true;
+
+            const simplifiedPoints = simplify(points, tolerance, highQuality);
+
+            console.log(points.length, simplifiedPoints.length, (simplifiedPoints.length / points.length).toFixed(1) - 1);
+
+            const latlngcounts = simplifiedPoints.map(p => { return { lat: p.x, lng: p.y, count: 0 } });
+
+            fs.writeFileSync(`./public/activity-details/details-${activity.activityId}.json`, JSON.stringify({ details: latlngcounts, activity: activity, bike: 'ebike' }));
         }
     }
     res.send('OK');

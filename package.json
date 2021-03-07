@@ -17,6 +17,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "nodemon": "^2.0.7",
+    "simplify-js": "^1.2.4",
     "tunneled-got": "^1.3.2"
   }
 }
