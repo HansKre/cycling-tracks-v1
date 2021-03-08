@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in m)
 const calcCrow = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // km
@@ -31,4 +34,9 @@ function timeConverter(UNIX_timestamp) {
     return time;
 }
 
-module.exports = { calcCrow, timeConverter };
+const detailsFileNames = () => {
+    const fileNames = fs.readdirSync('./public/activity-details');
+    return fileNames.filter(fileName => path.extname(fileName) === '.json');
+}
+
+module.exports = { calcCrow, timeConverter, detailsFileNames };
