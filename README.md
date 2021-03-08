@@ -8,7 +8,9 @@ Retrieve activity details for biking and visualize on a map.
 
 ## Backlog
 
-1) Highlight on mouseOver
-2) Popup on Hover instead click
-3) Add Activity-Details on Popup
+1) refactor: unified datamodel
+2) refactor: bosch.js and garmin.js to deliver data object according to that datamodel
+3) compare trips: same capture on Bosch AND Garmin?
 4) change line thickness on multiple usage
+5) Filters: by bike, 'gt 2h', 'lt 400hm'
+6) Dialog / List of all trips

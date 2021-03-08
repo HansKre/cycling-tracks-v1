@@ -27,20 +27,20 @@ fetch('/files')
                     .then(data => {
                         let latslongs;
                         if (data && data.bike && data.bike === 'ebike') {
-                            latslongs = data.details.map(p => [p.lat, p.lng]);
+                            latslongs = data.coordinates.map(p => [p.lat, p.lng]);
                         } else {
-                            if (!data.details || !data.details.geoPolylineDTO)
+                            if (!data.coordinates || !data.coordinates.geoPolylineDTO)
                                 return;
                             // flatten differences
-                            latslongs = data.details.geoPolylineDTO.polyline.map((entry) => [parseInt(entry.lat * 10000) / 10000, parseInt(entry.lon * 10000) / 10000]);
+                            latslongs = data.coordinates.geoPolylineDTO.polyline.map((entry) => [parseInt(entry.lat * 10000) / 10000, parseInt(entry.lon * 10000) / 10000]);
                         }
 
                         // add latslongs to map
-                        var polyline = L.polyline(latslongs, { color: randomColor() }).addTo(map);
+                        var polyline = L.polyline(latslongs, { color: randomColor(), weight: 5 }).addTo(map);
 
                         // add on-hover
                         polyline.on('mouseover', e => {
-                            polyline.setStyle({ weight: 7 });
+                            polyline.setStyle({ weight: 9 });
                             const popup = L.popup();
                             popup
                                 .setLatLng(e.latlng)
@@ -55,7 +55,7 @@ fetch('/files')
                                 .openOn(map);
                         });
                         polyline.on('mouseout', e => {
-                            polyline.setStyle({ weight: 3 });
+                            polyline.setStyle({ weight: 5 });
                             map.closePopup();
                         });
                     });
