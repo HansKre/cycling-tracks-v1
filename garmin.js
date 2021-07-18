@@ -36,8 +36,8 @@ const getDetailsForId = async (id) => {
     return JSON.parse(details);
 }
 
-const getActivities = async () => {
-    const activities = await client.fetch("https://connect.garmin.com/modern/proxy/activitylist-service/activities/search/activities?activityType=cycling&sortBy=startLocal&sortOrder=desc&limit=500&start=0&_=1615033738343",
+const getActivities = async (activityType = 'cycling') => {
+    const activities = await client.fetch(`https://connect.garmin.com/modern/proxy/activitylist-service/activities/search/activities?activityType=${activityType}&sortBy=startLocal&sortOrder=desc&limit=500&start=0&_=1615033738343`,
         options);
     return JSON.parse(activities);
 }
